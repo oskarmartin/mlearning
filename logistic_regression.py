@@ -67,27 +67,34 @@ def averageAccuracy(true_classes, pred_classes, K):
 
 
 def plotAABarPlot(aa_array):
+    fig = plt.figure()
     folds = len(aa_array)
-    plt.title("Testing logistic regression model")
+    plt.title("Testing logistic regression model\n")
     plt.bar(np.arange(folds), aa_array * 100, 0.35)
     for f in range(folds):
         plt.annotate("{}%".format(aa_array[f] * 100), (f - 0.2, aa_array[f] * 100 + 1))
     plt.ylabel("Average model accuracy (%)")
     plt.xlabel("CV fold")
+    plt.xticks(np.arange(folds), np.arange(1, 6))
+    fig.savefig('plots/testing_performance.png')
     plt.show()
 
 def plotCCGraph(cc_array, fold):
-    plt.title("Cross-validation fold: {}\nTraining logistic regression model".format(fold))
+    fig = plt.figure()
+    plt.title("Training logistic regression model\nCross-validation fold: {}".format(fold+1))
     plt.plot(np.arange(len(cc_array)), cc_array, color='orange')
     plt.ylabel("Correct classifications (%)")
-    plt.xlabel("Training iterations")
+    plt.xlabel("Training iteration")
+    fig.savefig('plots/cc_training_performance_fold{}.png'.format(fold+1))
     plt.show()
 
 def plotCEGraph(ce_array, fold):
-    plt.title("Cross-validation fold: {}\nTraining logistic regression model".format(fold))
+    fig = plt.figure()
+    plt.title("Training logistic regression model\nCross-validation fold: {}".format(fold+1))
     plt.plot(np.arange(len(ce_array)), ce_array)
     plt.ylabel("Cross-entropy")
     plt.xlabel("Training iteration")
+    fig.savefig('plots/ce_training_performance_fold{}.png'.format(fold+1))
     plt.show()
 
 
@@ -134,6 +141,7 @@ def crossValidation(train_set, test_set, folds, K, d):
     best_weights = weights_per_fold[np.argmax(aa_per_fold)]
     predicted_classes_best_model = np.argmax(1 / (1 + np.exp(-(best_weights.dot(test_x.transpose())))), axis=0)
     aa_best_model = averageAccuracy(test_y, predicted_classes_best_model, K)
+    print("Average accuracy - testing the best performing model: {}".format(aa_best_model))
 
     plotAABarPlot(aa_per_fold)
 
