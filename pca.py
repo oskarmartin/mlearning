@@ -1,69 +1,66 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
-import math
-import random
-
-
-# reshape til 28*28
-# plt.imshow
+import mpl_toolkits.mplot3d.axes3d
 
 scatter_shapes = ['o', 'v', 's', '*', 'x']
 colors = ['gray', 'tab:purple', 'tab:blue', 'orange', 'pink']
 
-pixel_range = 255.0
-number_of_classes = 5
-number_of_dimensions = 28 * 28
+def dimensionalityReduction(data_x, d):
 
-data_test = np.load("data/fashion_test.npy")
+    # Normalize data
+    data_x_tilde = (data_x - np.mean(data_x)) / np.std(data_x)
 
-test_x = np.array(data_test[:, 0:number_of_dimensions]) / pixel_range
-test_y = np.array(data_test[:, number_of_dimensions])
+    # Compute covariance matrix, eigenvalues and eigenvectors (= principle components (PC))
+    cov = (data_x_tilde.transpose().dot(data_x_tilde)) / d
+    eigValues, eigVectors = np.linalg.eig(cov)
+    eigVectors_sorted = eigVectors[np.argsort(eigValues)[::-1]]
 
-test_x_tilde = test_x - np.mean(test_x)
+    # Project data onto the 2 and 3 first principle components respectively
+    pro_2d = (eigVectors_sorted[:, 0:2].transpose().dot(data_x_tilde.transpose()))
+    pro_3d = (eigVectors_sorted[:, 0:3].transpose().dot(data_x_tilde.transpose()))
 
-# Compute covariance matrix, eigenvalues and eigenvectors (= PCs)
-cov = (test_x_tilde.transpose().dot(test_x_tilde))/number_of_dimensions
-eigenValues, eigenVectors = np.linalg.eig(cov)
-desc_eig = np.argsort(eigenValues)[::-1]
+    return pro_2d, pro_3d
 
+def pcaPlot3d(pro_3d, data_y, K):
 
-pc = (eigenVectors.transpose().dot(test_x_tilde.transpose()))
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    for i in range(K):
 
-print(pc.shape)
+        class_i_x = np.take(pro_3d[0], np.where(data_y == i))
+        class_i_y = np.take(pro_3d[1], np.where(data_y == i))
+        class_i_z = np.take(pro_3d[2], np.where(data_y == i))
 
-print(pc[0])
-print(test_y)
+        ax.scatter3D(class_i_x, class_i_y, class_i_z, c=colors[i], alpha=0.3)
 
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1, projection='3d')
-for i in range(number_of_classes):
-
-    class_i_x = np.take(pc[0], np.where(test_y == i))
-    class_i_y = np.take(pc[1], np.where(test_y == i))
-    class_i_z = np.take(pc[2], np.where(test_y == i))
-
-    plt.title('Data projection onto three principle components\n\n\n\n\n\n')
-    plt.xlabel(u'\nPC 1: \u03C3$^2$ = {:0.2f}'.format(np.var(pc[0])))
-    plt.ylabel(u'\nPC 2: \u03C3$^2$ = {:0.2f}'.format(np.var(pc[1])))
-    ax.set_zlabel(u'PC 3: \u03C3$^2$ = {:0.2f}'.format(np.var(pc[2])))
-    ax.scatter3D(class_i_x, class_i_y, class_i_z, c=colors[i], alpha=0.3)
+    plt.title('Data projection onto three principle components\n')
+    plt.xlabel(u'\nPC 1: \u03C3$^2$ = {:0.2f}'.format(np.var(pro_3d[0, :])))
+    plt.ylabel(u'\nPC 2: \u03C3$^2$ = {:0.2f}'.format(np.var(pro_3d[1, :])))
+    ax.set_zlabel(u'PC 3: \u03C3$^2$ = {:0.2f}'.format(np.var(pro_3d[2, :])))
     ax.view_init(azim=150)
+    fig.savefig('plots/3Dpca.png')
+    plt.show()
 
-fig.savefig('plots/3Dpca.png')
-plt.show()
+def pcaPlot2d(pro_2d, data_y, K):
 
-fig = plt.figure()
-for i in range(number_of_classes):
+    fig = plt.figure()
+    for i in range(K):
 
-    class_i_x = np.take(pc[0], np.where(test_y == i))
-    class_i_y = np.take(pc[1], np.where(test_y == i))
+        class_i_x = np.take(pro_2d[0], np.where(data_y == i))
+        class_i_y = np.take(pro_2d[1], np.where(data_y == i))
 
-    plt.scatter(class_i_x, class_i_y, c=colors[i], alpha=0.3)
+        plt.scatter(class_i_x, class_i_y, c=colors[i], alpha=0.3)
+
     plt.title('Data projection onto two principle components\n')
-    plt.xlabel(u'PC 1: \u03C3$^2$ = {:0.2f}'.format(np.var(pc[0])))
-    plt.ylabel(u'PC 2: \u03C3$^2$ = {:0.2f}'.format(np.var(pc[1])))
+    plt.xlabel(u'PC 1: \u03C3$^2$ = {:0.2f}'.format(np.var(pro_2d[0, :])))
+    plt.ylabel(u'PC 2: \u03C3$^2$ = {:0.2f}'.format(np.var(pro_2d[1, :])))
+    fig.savefig('plots/2Dpca.png')
+    plt.show()
 
-fig.savefig('plots/2Dpca.png')
-plt.show()
+def performPCA(data, K, d):
 
+    data_x = np.array(data[:, 0:d])
+    data_y = np.array(data[:, d])
+    projection_2D, projection_3D = dimensionalityReduction(data_x, d)
+    pcaPlot2d(projection_2D, data_y, K)
+    pcaPlot3d(projection_3D, data_y, K)
