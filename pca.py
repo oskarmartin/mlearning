@@ -21,7 +21,7 @@ def dimensionalityReduction(data_x, d):
 
     return pro_2d, pro_3d
 
-def pcaPlot3d(pro_3d, data_y, K):
+def pcaPlot3d(pro_3d, data_y, K, angle):
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
@@ -37,7 +37,7 @@ def pcaPlot3d(pro_3d, data_y, K):
     plt.xlabel(u'\nPC 1: \u03C3$^2$ = {:0.2f}'.format(np.var(pro_3d[0, :])))
     plt.ylabel(u'\nPC 2: \u03C3$^2$ = {:0.2f}'.format(np.var(pro_3d[1, :])))
     ax.set_zlabel(u'PC 3: \u03C3$^2$ = {:0.2f}'.format(np.var(pro_3d[2, :])))
-    ax.view_init(azim=150)
+    ax.view_init(azim=angle)
     fig.savefig('plots/3Dpca.png')
     plt.show()
 
@@ -57,10 +57,10 @@ def pcaPlot2d(pro_2d, data_y, K):
     fig.savefig('plots/2Dpca.png')
     plt.show()
 
-def performPCA(data, K, d):
+def performPCA(data, K, d, angle):
 
     data_x = np.array(data[:, 0:d])
     data_y = np.array(data[:, d])
     projection_2D, projection_3D = dimensionalityReduction(data_x, d)
     pcaPlot2d(projection_2D, data_y, K)
-    pcaPlot3d(projection_3D, data_y, K)
+    pcaPlot3d(projection_3D, data_y, K, angle)
