@@ -81,8 +81,8 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
     # Number of different parameter values to model after
     number_of_param_values = len(iteration_values)
     # Default parameter values (when one is varied the other is fixed)
-    default_iteration_size = iteration_values[number_of_param_values / 2 - 1]
-    default_step_size = step_size_values[number_of_param_values / 2 - 1]
+    default_iteration_size = iteration_values[number_of_param_values / 2]
+    default_step_size = step_size_values[number_of_param_values / 2]
 
     aa_per_fold_per_it_value = np.zeros((folds, len(iteration_values)))
     aa_per_fold_per_ss_value = np.zeros((folds, len(step_size_values)))
