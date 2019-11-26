@@ -17,7 +17,8 @@ random.shuffle(data_train)
 random.shuffle(data_test)
 
 # Parameter settings for computing varying models
-iterations_range = np.array([250, 300, 350, 400])
+# iterations_range = np.array([10, 11, 12, 13])
+iterations_range = np.array([200, 300, 400, 500])
 step_size_range = np.array([0.000015, 0.00001, 0.0000015, 0.000001])
 
 # Perform model training, testing and plot evaluation

@@ -1,17 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+scatter_shapes = ['o', 'v', 's', '*', 'x']
+colors = ['gray', 'tab:purple', 'tab:blue', 'orange', 'pink']
 
 # Create bar plot of model average accuracy per cross-validation fold
 def plotAABarPlot(aa_array, plotTitle, it, ss):
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8, 6))
     folds = len(aa_array)
     plt.title(plotTitle)
     plt.bar(np.arange(folds), aa_array * 100, 0.35)
     for f in range(folds):
         plt.annotate("{}%".format(aa_array[f] * 100), (f - 0.2, aa_array[f] * 100 + 1))
-    plt.ylabel("Average model accuracy (%)")
-    plt.xlabel("CV fold")
+    plt.ylabel("Average validation accuracy(%)")
+    plt.xlabel("Cross-validation fold")
     plt.xticks(np.arange(folds), np.arange(1, 6))
     fig.savefig('plots/testing_performance_it{}_ss{}.png'.format(it, ss))
     plt.show()
@@ -31,7 +33,7 @@ def plotCEGraph(ce_array, fold, it, ss):
     fig = plt.figure()
     plt.title("Training logistic regression model\nCross-validation fold: {}\nNumber of iterations: {}\nStep size: {}".format(fold+1, it, ss))
     plt.plot(np.arange(len(ce_array)), ce_array)
-    plt.ylabel("Cross-entropy")
+    plt.ylabel("Cross-entropy (training accuracy)")
     plt.xlabel("Training iteration")
     fig.savefig('plots/ce_training_performance_fold{}_it{}_ss{}.png'.format(fold+1, it, ss))
     plt.show()
@@ -59,6 +61,7 @@ def plotAABoxPlot(aa_per_fold_per_it_value, aa_per_fold_per_ss_value, number_of_
         data_list.append(model_i)
         x_labels.append("Model {}".format(number_of_param_values+i+1))
 
+    plt.ylabel("Average validation accuracy")
     bp = ax.boxplot(data_list)
     ax.set_xticklabels(x_labels)
 
@@ -74,3 +77,43 @@ def plotAABoxPlot(aa_per_fold_per_it_value, aa_per_fold_per_ss_value, number_of_
     fig.savefig('plots/aa_box_plot.png')
     plt.show()
 
+# Create bar plot for the performance of all model variations
+def plotCollectedModelsAABarPlot(bar_model_1_to_4, bar_model_5_to_8, it_range, ss_range, y_legend, col_int, plot_type):
+
+    # Collect x-axis labels
+    number_of_param_values = len(it_range)
+
+    default_iteration_size = it_range[number_of_param_values / 2]
+    default_step_size = ss_range[number_of_param_values / 2]
+
+    it_labels = np.hstack((it_range, np.full(number_of_param_values, default_iteration_size))).astype(int)
+    ss_labels = np.hstack((np.full(number_of_param_values, default_step_size), ss_range))
+
+    # Set bar properties
+    bar_width = 0.4
+    bar = np.hstack((bar_model_1_to_4, bar_model_5_to_8))
+    pos_bar = np.arange(number_of_param_values * 2)
+
+    fig = plt.figure(figsize=(8, 6))
+    plt.bar(pos_bar, bar, color=colors[col_int], width=bar_width, edgecolor='white')
+
+    # Set plot labels
+    x_labels = []
+    for i in range(len(pos_bar)):
+        if plot_type == 'it':
+            plt.text(x = pos_bar[i] - 0.21, y = bar[i] + 0.0005, s = "{:0.2f}%".format(bar[i] * 100), size = 9)
+        else:
+            plt.text(x=pos_bar[i] - 0.31, y=bar[i] + 0.0000005, s="{:0.2e}".format(bar[i]), size=9)
+        x_labels.append("Model {}\nit = {}\nss = {}".format(i+1, it_labels[i], ss_labels[i]))
+
+    if plot_type == 'it':
+        plt.ylim(np.min(bar) - np.std(bar), np.max(bar) + np.std(bar))
+
+    plt.yticks([])
+    plt.xticks([r for r in range(number_of_param_values * 2)], x_labels, size = 8)
+    plt.ylabel(y_legend)
+    plt.title("Model performances\n")
+
+    fig.savefig('plots/collected_models_bar_plot_{}.png'.format(plot_type))
+
+    plt.show()

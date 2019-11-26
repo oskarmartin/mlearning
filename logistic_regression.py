@@ -125,32 +125,36 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
             lgp.plotCEGraph(cross_entropy_i, k, iteration_values[i], default_step_size)
             lgp.plotCEGraph(cross_entropy_s, k, default_iteration_size, step_size_values[i])
 
-    # Create bar plot for every model showing testing accuracy for each CV-fold
+    # Create bar plot for every model showing validation accuracy for each CV-fold
     for i in range(number_of_param_values):
 
-        lgp.plotAABarPlot(aa_per_fold_per_it_value[:, i], "Testing logistic regression model\nTraining iterations = {}, step size = {}".format(iteration_values[i], default_step_size), iteration_values[i], default_step_size)
-        lgp.plotAABarPlot(aa_per_fold_per_ss_value[:, i], "Testing logistic regression model\nTraining iterations = {}, step size = {}".format(default_iteration_size, step_size_values[i]), default_iteration_size, step_size_values[i])
+        lgp.plotAABarPlot(aa_per_fold_per_it_value[:, i], "\nModel {}\nTraining iterations = {}, step size = {}\n".format(i + 1, iteration_values[i], default_step_size), iteration_values[i], default_step_size)
+        lgp.plotAABarPlot(aa_per_fold_per_ss_value[:, i], "\nModel {}\nTraining iterations = {}, step size = {}\n".format(number_of_param_values + i + 1, default_iteration_size, step_size_values[i]), default_iteration_size, step_size_values[i])
 
-    # Compute for evert model the average accuracy mean
-    ave_mean_acc_i = np.mean(aa_per_fold_per_it_value, axis = 0)
-    ave_mean_acc_s = np.mean(aa_per_fold_per_ss_value, axis = 0)
+    # Compute for every model the average validation accuracy mean
+    mean_ave_acc_i = np.mean(aa_per_fold_per_it_value, axis = 0)
+    mean_ave_acc_s = np.mean(aa_per_fold_per_ss_value, axis = 0)
 
-    # Compute for evert model the average accuracy variance
-    ave_var_acc_i = np.var(aa_per_fold_per_it_value, axis = 0)
-    ave_var_acc_s = np.var(aa_per_fold_per_ss_value, axis = 0)
+    # Compute for evert model the average validation accuracy variance
+    var_ave_acc_i = np.var(aa_per_fold_per_it_value, axis = 0)
+    var_ave_acc_s = np.var(aa_per_fold_per_ss_value, axis = 0)
 
     # Find optimal number of training iterations based on best model performance
-    optimal_iteration_size_mean = iteration_values[np.argmax(ave_mean_acc_i)]
-    # Find optimal number of training iterations based on lowest model variance
-    optimal_step_size_mean = step_size_values[np.argmax(ave_mean_acc_s)]
-
+    optimal_iteration_size_mean = iteration_values[np.argmax(mean_ave_acc_i)]
     # Find optimal step size based on best model performance
-    optimal_iteration_size_var = iteration_values[np.argmin(ave_var_acc_i)]
+    optimal_step_size_mean = step_size_values[np.argmax(mean_ave_acc_s)]
+
+    # Find optimal number of training iterations based on lowest model variance
+    optimal_iteration_size_var = iteration_values[np.argmin(var_ave_acc_i)]
     # Find optimal step size based on lowest model variance
-    optimal_step_size_var = step_size_values[np.argmin(ave_var_acc_s)]
+    optimal_step_size_var = step_size_values[np.argmin(var_ave_acc_s)]
 
     # Create box plot comparing model performances
     lgp.plotAABoxPlot(aa_per_fold_per_it_value, aa_per_fold_per_ss_value, number_of_param_values)
+
+    # Create bar plot comparing model performances
+    lgp.plotCollectedModelsAABarPlot(mean_ave_acc_i, mean_ave_acc_s, iteration_values, step_size_values, "Mean average validation accuracy over CV-folds", 1, "it")
+    lgp.plotCollectedModelsAABarPlot(var_ave_acc_i, var_ave_acc_s, iteration_values, step_size_values, "Average validation accuracy variance over CV-folds", 3, "ss")
 
     # Final testing:
     # Separate full training and test data into attributes and class labels
@@ -160,16 +164,33 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
 
     # Train logistic regression model on all training data, and test with all test data.
     # Number of training iteration and step size is derived from model of best performance.
-    weights_opt_mean, _, _, final_test_aa_opt_mean = train_and_test(train_x, train_y_binary,
-                                                                    K, d, optimal_iteration_size_mean,
-                                                                    optimal_step_size_mean, test_x, test_y)
+    _, _, _, final_test_aa_opt_mean = train_and_test(train_x, train_y_binary,
+                                                     K, d, optimal_iteration_size_mean,
+                                                     optimal_step_size_mean, test_x, test_y)
     # Train logistic regression model on all training data, and test with all test data.
     # Number of training iteration and step size is derived from model of lowest variance.
-    weights_opt_var, _, _, final_test_aa_opt_var = train_and_test(train_x, train_y_binary,
-                                                                  K, d, optimal_iteration_size_var,
-                                                                  optimal_step_size_var, test_x, test_y)
+    _, _, _, final_test_aa_opt_var = train_and_test(train_x, train_y_binary,
+                                                    K, d, optimal_iteration_size_var,
+                                                    optimal_step_size_var, test_x, test_y)
 
-    print("Average accuracy - final testing: {}".format(final_test_aa_opt_mean))
-    print("Average accuracy - final testing: {}".format(final_test_aa_opt_var))
+    testing_aa_per_model = np.zeros(number_of_param_values * 2)
+    for i in range(number_of_param_values):
+        _, _, _, testing_aa_per_model[i] = train_and_test(train_x, train_y_binary,
+                                                          K, d, iteration_values[i],
+                                                          default_step_size, test_x, test_y)
+
+        _, _, _, testing_aa_per_model[number_of_param_values + i] = train_and_test(train_x, train_y_binary,
+                                                                                   K, d, default_iteration_size,
+                                                                                   step_size_values[i], test_x, test_y)
+
+    print("Average testing accuracy:\nModel 1-8 = {}".format(testing_aa_per_model))
+
+    print("Mean average validation accuracy for model 1-4: {}".format(mean_ave_acc_i))
+    print("Mean average validation accuracy for model 5-8: {}".format(mean_ave_acc_s))
+    print("Average validation accuracy variance for model 1-4: {}".format(var_ave_acc_i))
+    print("Average validation accuracy variance for model 5-8: {}".format(var_ave_acc_s))
+
+    print("Average testing accuracy (parameters with highest model performance) - final testing: {}".format(final_test_aa_opt_mean))
+    print("Average testing accuracy (parameters with lowest model variance) - final testing: {}".format(final_test_aa_opt_var))
 
 
