@@ -95,21 +95,26 @@ def plotCollectedModelsAABarPlot(bar_model_1_to_4, bar_model_5_to_8, it_range, s
     pos_bar = np.arange(number_of_param_values * 2)
 
     fig = plt.figure(figsize=(8, 6))
+    ax = fig.add_subplot(111)
     plt.bar(pos_bar, bar, color=colors[col_int], width=bar_width, edgecolor='white')
 
-    # Set plot labels
+    # Set bar and axis labels
+    if plot_type == 'it':
+        plt.ylim(np.min(bar) - np.std(bar), np.max(bar) + np.std(bar))
+
+    start, end = ax.get_ylim()
+    ax.yaxis.set_ticks(np.arange(start, end + (end / 100), end - start))
+
     x_labels = []
     for i in range(len(pos_bar)):
         if plot_type == 'it':
             plt.text(x = pos_bar[i] - 0.21, y = bar[i] + 0.0005, s = "{:0.2f}%".format(bar[i] * 100), size = 9)
+            ax.yaxis.set_ticklabels(["{:0.2f}%".format(start * 100), "{:0.2f}%".format((end + end / 100) * 100)])
         else:
             plt.text(x=pos_bar[i] - 0.31, y=bar[i] + 0.0000005, s="{:0.2e}".format(bar[i]), size=9)
-        x_labels.append("Model {}\nit = {}\nss = {}".format(i+1, it_labels[i], ss_labels[i]))
+            ax.yaxis.set_ticklabels(["0", "{:0.2e}".format(end + (end / 100))])
+        x_labels.append(u'Model {}\nit = {}\n\u03B7 = {}'.format(i+1, it_labels[i], ss_labels[i]))
 
-    if plot_type == 'it':
-        plt.ylim(np.min(bar) - np.std(bar), np.max(bar) + np.std(bar))
-
-    plt.yticks([])
     plt.xticks([r for r in range(number_of_param_values * 2)], x_labels, size = 8)
     plt.ylabel(y_legend)
     plt.title("Model performances\n")

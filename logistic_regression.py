@@ -5,10 +5,10 @@ import data_processing as dp
 
 # Logistic regression model:
 # Train model on input data and output decision boundary weights and model performance
-def logistic_regression(x, r, K, d, iterations, eta):
+def performLogisticRegression(X, r, K, d, iterations, eta):
 
-    train_set_size = len(x)
-    w = np.random.uniform(-0.01, 0.01, (K, d))
+    train_set_size = len(X)
+    W = np.random.uniform(-0.01, 0.01, (K, d))
     y = np.zeros((train_set_size, K))
     cross_e = np.zeros(iterations)
     acc = np.zeros(iterations)
@@ -18,16 +18,16 @@ def logistic_regression(x, r, K, d, iterations, eta):
         grad_w = np.zeros((K, d))
 
         for t in range(train_set_size):
-            o = (w * x[t]).sum(axis=1)
+            o = (W * X[t]).sum(axis=1)
             y[t] = np.exp(o) / np.sum(np.exp(o))
 
             if np.argmax(y[t]) == np.argmax(r[t]):
                 acc[it] += 1.0/float(train_set_size)
 
             for i in range(K):
-                grad_w[i] += (r[t][i] - y[t][i]) * x[t]
+                grad_w[i] += (r[t][i] - y[t][i]) * X[t]
 
-        w += eta * grad_w
+        W += eta * grad_w
 
         # Training accuracy
         correct_class_indices = np.argmax(r, axis=1)
@@ -35,37 +35,20 @@ def logistic_regression(x, r, K, d, iterations, eta):
         prob_correct_class = np.choose(correct_class_indices, y.T)
         cross_e[it] = -sum(np.log(prob_correct_class)/float(train_set_size))
 
-    return w, cross_e, acc
+    return W, cross_e, acc
 
-
-# Average accuracy:
-# Compute average accuracy based on set of true and predicted classes
-def averageAccuracy(true_classes, pred_classes, K):
-
-    aa = 0
-    for i in range(K):
-        indices_true = np.where(true_classes == i)
-        indices_pred = np.where(pred_classes == i)
-        TP = len(np.intersect1d(indices_true, indices_pred))
-        FP = np.sum(pred_classes == i) - TP
-        FN = np.sum(true_classes == i) - TP
-        TN = len(pred_classes) - TP - FP - FN
-
-        aa += ((TP + TN) / float(TP + TN + FP + FN)) / K
-
-    return aa
 
 # Train and test logistic regression model
 def train_and_test(train_x, train_y_binary, K, d, it, ss, test_x, test_y):
 
     # Send training data through the logistic regression model
     print("\t\tTraining initialized")
-    weights, cross_entropy, correct_classification = logistic_regression(train_x, train_y_binary, K, d, it, ss)
+    weights, cross_entropy, correct_classification = performLogisticRegression(train_x, train_y_binary, K, d, it, ss)
     print("\n\t\tTraining finished")
 
     # Evaluate the resulting weights on testing data
     predicted_classes = np.argmax(1 / (1 + np.exp(-(weights.dot(test_x.transpose())))), axis=0)
-    aa_per_fold_per_ss_value = averageAccuracy(test_y, predicted_classes, K)
+    aa_per_fold_per_ss_value = dp.averageAccuracy(test_y, predicted_classes, K)
 
     return weights, correct_classification, cross_entropy, aa_per_fold_per_ss_value
 
@@ -99,7 +82,7 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
         k_train_set = np.concatenate(np.delete(train_set_split, k, axis=0))
 
         # Separate attributes from class label in the fold k training and test set
-        k_train_x, k_train_y, k_test_x, k_test_y, k_train_y_binary = dp.splitIntoAttAndClass(k_test_set, k_train_set, K, d, element_range)
+        k_train_x, k_train_y, k_test_x, k_test_y, k_train_y_binary = dp.splitIntoFeaturesAndLabels(k_test_set, k_train_set, K, d, element_range)
 
         # Varying parameter-values loop
         for i in range(number_of_param_values):
@@ -158,7 +141,7 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
 
     # Final testing:
     # Separate full training and test data into attributes and class labels
-    train_x, train_y, test_x, test_y, train_y_binary = dp.splitIntoAttAndClass(test_set, train_set, K, d, element_range)
+    train_x, train_y, test_x, test_y, train_y_binary = dp.splitIntoFeaturesAndLabels(test_set, train_set, K, d, element_range)
 
     print("Final training")
 
@@ -194,3 +177,12 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
     print("Average testing accuracy (parameters with lowest model variance) - final testing: {}".format(final_test_aa_opt_var))
 
 
+# Average testing accuracy:
+# Model 1-8 = [0.9184  0.92216 0.92288 0.92456 0.9136  0.91552 0.92368 0.92104]
+
+# Mean average validation accuracy for model 1-4: [0.92888 0.93152 0.93396 0.9356 ]
+# Mean average validation accuracy for model 5-8: [0.9264  0.93052 0.93436 0.93076]
+# Average validation accuracy variance for model 1-4: [4.0736e-06 2.0576e-06 2.0544e-06 4.7200e-06]
+# Average validation accuracy variance for model 5-8: [2.57120e-05 1.55936e-05 3.99040e-06 3.09440e-06]
+# Average testing accuracy (parameters with highest model performance) - final testing: 0.92432
+# Average testing accuracy (parameters with lowest model variance) - final testing: 0.92112
