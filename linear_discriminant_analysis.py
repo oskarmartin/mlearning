@@ -1,7 +1,7 @@
 import sys
 
 import numpy as np
-import data_processing as dp
+import ml_tools as ml
 import pca
 import random
 import matplotlib.pyplot as plt
@@ -81,9 +81,9 @@ def reduceDimensionsUsingLDA(X, y, K, d):
 # Compute decision boundary weights of input data using Least Square Classifier
 def performLeastSquareClassifier(X, T):
 
-    # d = X.shape[1]
-    # X_extended = np.ones((X.shape[0], d + 1))
-    # X_extended[:, 0:d] = X
+    d = X.shape[1]
+    X_extended = np.ones((X.shape[0], d + 1))
+    X_extended[:, 0:d] = X
 
     W = np.linalg.inv((X.transpose()).dot(X)).dot((X.transpose()).dot(T))
 
@@ -98,7 +98,7 @@ def predictLabels(test_data_x, true_labels, trained_weights, K):
 
     probability_y = test_data_x.dot(trained_weights)
     y = np.argmax(probability_y, axis=1)
-    ave_acc = dp.averageAccuracy(true_labels, y, K)
+    ave_acc = ml.averageAccuracy(true_labels, y, K)
 
     return ave_acc
 
@@ -154,8 +154,9 @@ def plot2DwithDecisionsLDA(W, data_x, data_y, K, var_explained, title):
     plt.show()
 
 
-def discriminate(train_set, test_set, K, d, element_range):
-    train_x, train_y, test_x, test_y, train_y_binary = dp.splitIntoFeaturesAndLabels(test_set, train_set, K, d, element_range)
+def discriminate(train_set, test_set, K, d):
+
+    train_x, train_y, test_x, test_y, train_y_binary = ml.splitIntoFeaturesAndLabels(test_set, train_set, K, d)
 
     W = performLeastSquareClassifier(train_x, train_y_binary)
 
@@ -163,27 +164,30 @@ def discriminate(train_set, test_set, K, d, element_range):
     print("Least square classifier average test accuracy: {}".format(ave_acc))
     # ---------------------------------------------------------------------- #
 
-    Z_train_x, var_explained = reduceDimensionsUsingLDA(train_x, train_y, K, d)
-    Z_test_x, _ = reduceDimensionsUsingLDA(test_x, test_y, K, d)
+    lda_train_x, var_explained = reduceDimensionsUsingLDA(train_x, train_y, K, d)
+    lda_test_x, _ = reduceDimensionsUsingLDA(test_x, test_y, K, d)
     ave_acc = []
     x_ticks = []
 
-    i = 1
-    while np.linalg.cond(Z_train_x[0:i, :].transpose()) < 1/sys.float_info.epsilon:
+    for i in range(1, K+1):
+        print(i)
+        lda_train_x_sub = lda_train_x[0:i, :].transpose()
+        lda_test_x_sub = lda_test_x[0:i, :].transpose()
 
-        Z_train_x_sub = Z_train_x[0:i, :].transpose()
-        Z_test_x_sub = Z_test_x[0:i, :].transpose()
+        W = performLeastSquareClassifier(lda_train_x, train_y_binary)
 
-        W = performLeastSquareClassifier(Z_train_x_sub, train_y_binary)
+        ave_acc.append(predictLabels(lda_test_x_sub, test_y, W, K))
+        x_ticks.append("d = {}\nve = {:0.2f}%".format(i, var_explained[i]))
 
-        ave_acc.append(predictLabels(Z_test_x_sub, test_y, W, K))
-        x_ticks.append("d = {}\nve = {:0.2f}%".format(i + 1, var_explained[i]))
-        i += 1
+    fig = plt.figure(figsize=(8, 5))
+    plt.plot(np.arange(len(ave_acc)), ave_acc)
+    plt.xticks(np.arange(len(x_ticks)), x_ticks)
+    plt.show()
 
     print(ave_acc)
 
-    lda_train_x_2D = Z_train_x[0:2, :]
-    lda_train_x_3D = Z_train_x[0:3, :]
+    lda_train_x_2D = lda_train_x[0:2, :]
+    lda_train_x_3D = lda_train_x[0:3, :]
 
     W_2D = performLeastSquareClassifier(lda_train_x_2D.transpose(), train_y_binary)
     W_3D = performLeastSquareClassifier(lda_train_x_3D.transpose(), train_y_binary)
@@ -198,12 +202,9 @@ def discriminate(train_set, test_set, K, d, element_range):
     plot2DwithDecisionsLDA(W_2D, lda_train_x_2D, train_y, K, var_explained, 'LDA 2D training data projection\nwith least square classifier decision boundaries')
     plot3DwithDecisionsLDA(W_3D, lda_train_x_3D, train_y, K, var_explained, 'LDA 3D training data projection\nwith least square classifier decision boundaries\n')
 
-    fig = plt.figure(figsize=(8, 5))
-    plt.plot(np.arange(len(ave_acc)), ave_acc)
-    plt.xticks(np.arange(len(x_ticks)), x_ticks)
-    plt.show()
 
-discriminate(data_train, data_test, number_of_classes, number_of_dimensions, pixel_range)
+
+discriminate(data_train, data_test, number_of_classes, number_of_dimensions)
 
 
 

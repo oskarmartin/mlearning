@@ -73,5 +73,5 @@ def performPCA(data, K, d, angle):
     y_label = 'PC 2: ve = {:0.2f}%'.format(variance_explained[1])
     z_label = 'PC 3: ve = {:0.2f}%'.format(variance_explained[2])
 
-    pcaPlot2d(projection_2D, data_y, K, x_label, y_label, 'PCA data 2D projection\n')
-    pcaPlot3d(projection_3D, data_y, K, x_label, y_label, z_label, 'PCA data 3D projection\n', angle)
+    pcaPlot2d(projection_2D, data_y, K, x_label, y_label, 'PCA 2D data projection\n')
+    pcaPlot3d(projection_3D, data_y, K, x_label, y_label, z_label, 'PCA 3D data projection\n', angle)

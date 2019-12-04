@@ -1,6 +1,6 @@
 import numpy as np
 import logistic_regression_plots as lgp
-import data_processing as dp
+import ml_tools as ml
 
 
 # Logistic regression model:
@@ -48,7 +48,7 @@ def train_and_test(train_x, train_y_binary, K, d, it, ss, test_x, test_y):
 
     # Evaluate the resulting weights on testing data
     predicted_classes = np.argmax(1 / (1 + np.exp(-(weights.dot(test_x.transpose())))), axis=0)
-    aa_per_fold_per_ss_value = dp.averageAccuracy(test_y, predicted_classes, K)
+    aa_per_fold_per_ss_value = ml.averageAccuracy(test_y, predicted_classes, K)
 
     return weights, correct_classification, cross_entropy, aa_per_fold_per_ss_value
 
@@ -59,7 +59,7 @@ def train_and_test(train_x, train_y_binary, K, d, it, ss, test_x, test_y):
 # yielding "number_of_param_values" * 2 models, all tested using CV.
 # Evaluate optimal number of training iterations and step size and
 # use them for final testing with input test set
-def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_size_values, element_range):
+def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_size_values):
 
     # Number of different parameter values to model after
     number_of_param_values = len(iteration_values)
@@ -82,7 +82,7 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
         k_train_set = np.concatenate(np.delete(train_set_split, k, axis=0))
 
         # Separate attributes from class label in the fold k training and test set
-        k_train_x, k_train_y, k_test_x, k_test_y, k_train_y_binary = dp.splitIntoFeaturesAndLabels(k_test_set, k_train_set, K, d, element_range)
+        k_train_x, k_train_y, k_test_x, k_test_y, k_train_y_binary = ml.splitIntoFeaturesAndLabels(k_test_set, k_train_set, K, d)
 
         # Varying parameter-values loop
         for i in range(number_of_param_values):
@@ -94,7 +94,6 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
             weights_i, correct_classification_i, cross_entropy_i, aa_per_fold_per_it_value[k][i] = train_and_test(k_train_x, k_train_y_binary,
                                                                                                                   K, d, iteration_values[i],
                                                                                                                   default_step_size, k_test_x, k_test_y)
-
             # Train model on fold k training data with varying number of step size
             # and test the results on fold k test data
             weights_s, correct_classification_s, cross_entropy_s, aa_per_fold_per_ss_value[k][i] = train_and_test(k_train_x, k_train_y_binary,
@@ -141,7 +140,7 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
 
     # Final testing:
     # Separate full training and test data into attributes and class labels
-    train_x, train_y, test_x, test_y, train_y_binary = dp.splitIntoFeaturesAndLabels(test_set, train_set, K, d, element_range)
+    train_x, train_y, test_x, test_y, train_y_binary = ml.splitIntoFeaturesAndLabels(test_set, train_set, K, d)
 
     print("Final training")
 

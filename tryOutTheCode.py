@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import ml_tools as ml
 
 
 colors = ['gray', 'tab:purple', 'tab:blue', 'orange', 'pink']
@@ -52,7 +53,7 @@ def plotCollectedModelsAABarPlot(bar_model_1_to_4, bar_model_5_to_8, it_range, s
 # plotCollectedModelsAABarPlot(np.array([0.9282,  0.9318,  0.9344, 0.93608]), np.array([0.9234, 0.92704, 0.935, 0.93028]), np.array([250, 300, 350, 400]), np.array([0.000015, 0.00001, 0.0000015, 0.000001]), "Mean average validation accuracy", 1, "it")
 # plotCollectedModelsAABarPlot(np.array([2.59520e-05, 2.31200e-05, 2.70720e-05, 2.39776e-05]), np.array([2.65760e-05, 1.37504e-05, 2.15680e-05, 3.24416e-05]), np.array([250, 300, 350, 400]), np.array([0.000015, 0.00001, 0.0000015, 0.000001]), "Average validation accuracy variance", 3, "ss")
 
-a = np.array([1, 2, 3, 0, 0, 20])
-a[a == 0] = 30
-print(a)
+
+
+
 
