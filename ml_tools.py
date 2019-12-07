@@ -1,5 +1,11 @@
 import numpy as np
-import random
+from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import axes3d, Axes3D
+
+
+scatter_shapes = ['o', 'v', 's', '*', 'x']
+colors = ['gray', 'tab:purple', 'tab:blue', 'orange', 'pink']
+
 
 # Separate test and training data set into respective attribute array and class label array
 def splitIntoFeaturesAndLabels(test_set, train_set, K, d):
@@ -67,7 +73,6 @@ def extendData(data, d):
     # Duplicate label array
     extended_data_y = np.hstack((data_y, data_y))
     # Concatenate attributes and labels
-    # data_extend = np.hstack((extended_data_x, extended_data_y))
     data_extend = np.zeros((extended_data_x.shape[0], d+1))
     data_extend[:, 0:d] = extended_data_x
     data_extend[:, d] = extended_data_y
@@ -75,15 +80,77 @@ def extendData(data, d):
 
     return data_extend
 
-data_train = np.load("data/fashion_train.npy")
-data_test = np.load("data/fashion_test.npy")
 
-# Shuffle data
-random.shuffle(data_train)
-random.shuffle(data_test)
+# Compute confusion matrix
+def printConfusionMatrix(true_classes, pred_classes, K):
 
-# Expand data by its flipped elements
-data_train_expand = extendData(data_train, 784)
-data_test_expand = extendData(data_test, 784)
+    confMatrixInt = np.zeros((K, K))
+    confMatrixString = [[ "" for i in range(K)] for j in range(K)]
+    for i in range(len(true_classes)):
+        confMatrixInt[true_classes[i]][pred_classes[i]] += 1
 
-train_x, train_y, test_x, test_y, train_y_binary = splitIntoFeaturesAndLabels(data_test_expand, data_train_expand, 5, 784)
+    for i in range(K):
+        for j in range(K):
+            class_size = np.count_nonzero(true_classes == i)
+            if class_size != 0:
+                confMatrixInt[i][j] = (confMatrixInt[i][j] / class_size) * 100
+            confMatrixString[i][j] = str(round(confMatrixInt[i][j], 1)) + "%"
+
+    print(np.array(confMatrixString))
+
+    return confMatrixString
+
+
+# Plot data in 2D and color according to class labels
+def plotDataIn2D(pro_2d, data_y, K, x_label, y_label, dim_reducer, set_type):
+
+    fig = plt.figure()
+    for i in range(K):
+
+        class_i_x = np.take(pro_2d[0], np.where(data_y == i))
+        class_i_y = np.take(pro_2d[1], np.where(data_y == i))
+
+        plt.scatter(class_i_x, class_i_y, c=colors[i], alpha=0.3)
+
+    plt.title("{} 2D {} data projection \n".format(dim_reducer, set_type))
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    fig.savefig('projectionPlots/2D_{}_plot_{}.png'.format(set_type, dim_reducer))
+    plt.show()
+
+
+# Plot data in 3D and color according to class labels
+def plotDataIn3D(pro_3d, data_y, K, x_label, y_label, z_label, dim_reducer, set_type, angle_x, angle_y):
+
+    # Set ax properties
+    fig = plt.figure(figsize=(7, 5))
+    ax = plt.axes(projection='3d')
+    if set_type == 'test':
+        plt.xlim(-2, 3)
+        plt.ylim(-2, 2)
+        ax.set_zlim(-2, 2)
+
+    # Give each class a unique scatter color
+    for i in range(K):
+        class_i_x = np.take(pro_3d[0], np.where(data_y == i))
+        class_i_y = np.take(pro_3d[1], np.where(data_y == i))
+        class_i_z = np.take(pro_3d[2], np.where(data_y == i))
+        ax.scatter3D(class_i_x, class_i_y, class_i_z, c=colors[i], alpha=0.3)
+
+    # Set plot labels
+    plt.title("{} 3D {} data projection \n".format(dim_reducer, set_type))
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    ax.set_zlabel(z_label)
+    ax.view_init(angle_x, angle_y)
+
+    # Set file saving name
+    if set_type == 'training' and pro_3d.shape[1] > 10000:
+        fig.savefig('projectionPlots/3D_{}_plot_{}_extended.png'.format(set_type, dim_reducer))
+    else:
+        fig.savefig('projectionPlots/3D_{}_plot_{}.png'.format(set_type, dim_reducer))
+    plt.show()
+
+    return
+
+

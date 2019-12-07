@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 scatter_shapes = ['o', 'v', 's', '*', 'x']
 colors = ['gray', 'tab:purple', 'tab:blue', 'orange', 'pink']
 
+
 # Create bar plot of model average accuracy per cross-validation fold
 def plotAABarPlot(aa_array, plotTitle, it, ss):
     fig = plt.figure(figsize=(8, 6))
@@ -18,6 +19,7 @@ def plotAABarPlot(aa_array, plotTitle, it, ss):
     fig.savefig('plots/testing_performance_it{}_ss{}.png'.format(it, ss))
     plt.show()
 
+
 # Create graph of model accuracy over training iterations
 def plotCCGraph(cc_array, fold, it, ss):
     fig = plt.figure()
@@ -28,6 +30,7 @@ def plotCCGraph(cc_array, fold, it, ss):
     fig.savefig('plots/cc_training_performance_fold{}_it{}_ss{}.png'.format(fold+1, it, ss))
     plt.show()
 
+
 # Create graph of model cross-entropy over training iterations
 def plotCEGraph(ce_array, fold, it, ss):
     fig = plt.figure()
@@ -37,6 +40,7 @@ def plotCEGraph(ce_array, fold, it, ss):
     plt.xlabel("Training iteration")
     fig.savefig('plots/ce_training_performance_fold{}_it{}_ss{}.png'.format(fold+1, it, ss))
     plt.show()
+
 
 # Create box plot for the performance of all model variations
 def plotAABoxPlot(aa_per_fold_per_it_value, aa_per_fold_per_ss_value, number_of_param_values):
@@ -76,6 +80,7 @@ def plotAABoxPlot(aa_per_fold_per_it_value, aa_per_fold_per_ss_value, number_of_
 
     fig.savefig('plots/aa_box_plot.png')
     plt.show()
+
 
 # Create bar plot for the performance of all model variations
 def plotCollectedModelsAABarPlot(bar_model_1_to_4, bar_model_5_to_8, it_range, ss_range, y_legend, col_int, plot_type):

@@ -14,7 +14,7 @@ def performLogisticRegression(X, r, K, d, iterations, eta):
     acc = np.zeros(iterations)
 
     for it in range(iterations):
-        print("\r\t\t\tRunning iteration {} of {}".format(it+1, iterations)),
+        print("\r\t\tRunning training iteration {} of {}".format(it+1, iterations)),
         grad_w = np.zeros((K, d))
 
         for t in range(train_set_size):
@@ -38,13 +38,11 @@ def performLogisticRegression(X, r, K, d, iterations, eta):
     return W, cross_e, acc
 
 
-# Train and test logistic regression model
-def train_and_test(train_x, train_y_binary, K, d, it, ss, test_x, test_y):
+# Call for logistic regression training and testing
+def train_and_test_lg(train_x, train_y_binary, K, d, it, ss, test_x, test_y):
 
     # Send training data through the logistic regression model
-    print("\t\tTraining initialized")
     weights, cross_entropy, correct_classification = performLogisticRegression(train_x, train_y_binary, K, d, it, ss)
-    print("\n\t\tTraining finished")
 
     # Evaluate the resulting weights on testing data
     predicted_classes = np.argmax(1 / (1 + np.exp(-(weights.dot(test_x.transpose())))), axis=0)
@@ -91,14 +89,14 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
 
             # Train model on fold k training data with varying number of training iterations
             # and test the results on fold k test data
-            weights_i, correct_classification_i, cross_entropy_i, aa_per_fold_per_it_value[k][i] = train_and_test(k_train_x, k_train_y_binary,
-                                                                                                                  K, d, iteration_values[i],
-                                                                                                                  default_step_size, k_test_x, k_test_y)
+            weights_i, correct_classification_i, cross_entropy_i, aa_per_fold_per_it_value[k][i] = train_and_test_lg(k_train_x, k_train_y_binary,
+                                                                                                                     K, d, iteration_values[i],
+                                                                                                                     default_step_size, k_test_x, k_test_y)
             # Train model on fold k training data with varying number of step size
             # and test the results on fold k test data
-            weights_s, correct_classification_s, cross_entropy_s, aa_per_fold_per_ss_value[k][i] = train_and_test(k_train_x, k_train_y_binary,
-                                                                                                                  K, d, default_iteration_size,
-                                                                                                                  step_size_values[i], k_test_x, k_test_y)
+            weights_s, correct_classification_s, cross_entropy_s, aa_per_fold_per_ss_value[k][i] = train_and_test_lg(k_train_x, k_train_y_binary,
+                                                                                                                     K, d, default_iteration_size,
+                                                                                                                     step_size_values[i], k_test_x, k_test_y)
             # Plot training accuracy for the two models defined above
             lgp.plotCCGraph(correct_classification_i, k, iteration_values[i], default_step_size)
             lgp.plotCCGraph(correct_classification_s, k, default_iteration_size, step_size_values[i])
@@ -146,24 +144,24 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
 
     # Train logistic regression model on all training data, and test with all test data.
     # Number of training iteration and step size is derived from model of best performance.
-    _, _, _, final_test_aa_opt_mean = train_and_test(train_x, train_y_binary,
-                                                     K, d, optimal_iteration_size_mean,
-                                                     optimal_step_size_mean, test_x, test_y)
+    _, _, _, final_test_aa_opt_mean = train_and_test_lg(train_x, train_y_binary,
+                                                        K, d, optimal_iteration_size_mean,
+                                                        optimal_step_size_mean, test_x, test_y)
     # Train logistic regression model on all training data, and test with all test data.
     # Number of training iteration and step size is derived from model of lowest variance.
-    _, _, _, final_test_aa_opt_var = train_and_test(train_x, train_y_binary,
-                                                    K, d, optimal_iteration_size_var,
-                                                    optimal_step_size_var, test_x, test_y)
+    _, _, _, final_test_aa_opt_var = train_and_test_lg(train_x, train_y_binary,
+                                                       K, d, optimal_iteration_size_var,
+                                                       optimal_step_size_var, test_x, test_y)
 
     testing_aa_per_model = np.zeros(number_of_param_values * 2)
     for i in range(number_of_param_values):
-        _, _, _, testing_aa_per_model[i] = train_and_test(train_x, train_y_binary,
-                                                          K, d, iteration_values[i],
-                                                          default_step_size, test_x, test_y)
+        _, _, _, testing_aa_per_model[i] = train_and_test_lg(train_x, train_y_binary,
+                                                             K, d, iteration_values[i],
+                                                             default_step_size, test_x, test_y)
 
-        _, _, _, testing_aa_per_model[number_of_param_values + i] = train_and_test(train_x, train_y_binary,
-                                                                                   K, d, default_iteration_size,
-                                                                                   step_size_values[i], test_x, test_y)
+        _, _, _, testing_aa_per_model[number_of_param_values + i] = train_and_test_lg(train_x, train_y_binary,
+                                                                                      K, d, default_iteration_size,
+                                                                                      step_size_values[i], test_x, test_y)
 
     print("Average testing accuracy:\nModel 1-8 = {}".format(testing_aa_per_model))
 
