@@ -154,8 +154,6 @@ def train(network, X, y):
     loss = softmax_crossentropy_with_logits(logits, y)
     loss_grad = grad_softmax_crossentropy_with_logits(logits, y)
 
-    plt.plot(loss_grad, label="Loss grad")
-    plt.plot()
 
     #Propagate gradients through the network
     #Reverse propagation as this is  backprop
