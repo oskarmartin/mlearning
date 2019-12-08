@@ -16,7 +16,7 @@ def plotAABarPlot(aa_array, plotTitle, it, ss):
     plt.ylabel("Average validation accuracy(%)")
     plt.xlabel("Cross-validation fold")
     plt.xticks(np.arange(folds), np.arange(1, 6))
-    fig.savefig('plots/testing_performance_it{}_ss{}.png'.format(it, ss))
+    fig.savefig('logisticRegPlots/testing_performance_it{}_ss{}.png'.format(it, ss))
     plt.show()
 
 
@@ -27,7 +27,7 @@ def plotCCGraph(cc_array, fold, it, ss):
     plt.plot(np.arange(len(cc_array)), cc_array, color='orange')
     plt.ylabel("Correct classifications (%)")
     plt.xlabel("Training iteration")
-    fig.savefig('plots/cc_training_performance_fold{}_it{}_ss{}.png'.format(fold+1, it, ss))
+    fig.savefig('logisticRegPlots/cc_training_performance_fold{}_it{}_ss{}.png'.format(fold+1, it, ss))
     plt.show()
 
 
@@ -38,7 +38,7 @@ def plotCEGraph(ce_array, fold, it, ss):
     plt.plot(np.arange(len(ce_array)), ce_array)
     plt.ylabel("Cross-entropy (training accuracy)")
     plt.xlabel("Training iteration")
-    fig.savefig('plots/ce_training_performance_fold{}_it{}_ss{}.png'.format(fold+1, it, ss))
+    fig.savefig('logisticRegPlots/ce_training_performance_fold{}_it{}_ss{}.png'.format(fold+1, it, ss))
     plt.show()
 
 
@@ -78,7 +78,7 @@ def plotAABoxPlot(aa_per_fold_per_it_value, aa_per_fold_per_ss_value, number_of_
         # change fill color
         box.set(color = 'tab:blue')
 
-    fig.savefig('plots/aa_box_plot.png')
+    fig.savefig('logisticRegPlots/aa_box_plot.png')
     plt.show()
 
 
@@ -116,7 +116,7 @@ def plotCollectedModelsAABarPlot(bar_model_1_to_4, bar_model_5_to_8, it_range, s
             plt.text(x = pos_bar[i] - 0.21, y = bar[i] + 0.0005, s = "{:0.2f}%".format(bar[i] * 100), size = 9)
             ax.yaxis.set_ticklabels(["{:0.2f}%".format(start * 100), "{:0.2f}%".format((end + end / 100) * 100)])
         else:
-            plt.text(x=pos_bar[i] - 0.31, y=bar[i] + 0.0000005, s="{:0.2e}".format(bar[i]), size=9)
+            plt.text(x=pos_bar[i] - 0.31, y=bar[i] + 0.0000003, s="{:0.2e}".format(bar[i]), size=9)
             ax.yaxis.set_ticklabels(["0", "{:0.2e}".format(end + (end / 100))])
         x_labels.append(u'Model {}\nit = {}\n\u03B7 = {}'.format(i+1, it_labels[i], ss_labels[i]))
 
@@ -124,6 +124,6 @@ def plotCollectedModelsAABarPlot(bar_model_1_to_4, bar_model_5_to_8, it_range, s
     plt.ylabel(y_legend)
     plt.title("Model performances\n")
 
-    fig.savefig('plots/collected_models_bar_plot_{}.png'.format(plot_type))
+    fig.savefig('logisticRegPlots/collected_models_bar_plot_{}.png'.format(plot_type))
 
     plt.show()

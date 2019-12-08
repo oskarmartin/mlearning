@@ -85,7 +85,7 @@ def predictLabels(test_data_x, true_labels, trained_weights, K):
     return ave_acc
 
 
-# Plot least square Average Accuracy as a function of LDA dimensions included in training
+# Plot least squares Average Accuracy as a function of LDA dimensions included in training
 def plotPerformanceOverDimensions(lda_ave_acc, x_ticks, title, D):
 
     fig = plt.figure(figsize=(8, 5))
@@ -94,7 +94,7 @@ def plotPerformanceOverDimensions(lda_ave_acc, x_ticks, title, D):
     plt.xticks(np.arange(D-1), x_ticks, size=9)
     plt.xlabel("\nLDA dimensions included in training the model\n", size=11)
     plt.ylabel("Average testing accuracy\n", size=11)
-    fig.savefig('projectionPlots/least_square_performance.png')
+    fig.savefig('projectionPlots/least_squares_performance.png')
 
     plt.show()
 
@@ -128,21 +128,21 @@ def initiateCreationOfLDAPlots(lda_train, lda_test, train_y_binary, train_y, tes
     lplots.plot3DwithDecisionsLDA(W_3D, lda_test_3D, test_y, K, var_explained, 'test', 20, 15)
 
 
-# Call for least square classifier training on LDA data
+# Call for least squares classifier training on LDA data
 def train_and_test_lda(train_set, test_set, K, d):
 
     # Separate training and test data into attributes and class labels
     train_x, train_y, test_x, test_y, train_y_binary = ml.splitIntoFeaturesAndLabels(test_set, train_set, K, d)
 
-    # Train the least square classifier model on the training data data
+    # Train the least squares classifier model on the training data data
     W = performLeastSquareClassifier(train_x, train_y_binary)
 
     # Compute model performance on training data (Average training accuracy)
     ave_acc_train = predictLabels(train_x, train_y, W, K)
     # Compute model performance on test data (Average testing accuracy)
     ave_acc_test = predictLabels(test_x, test_y, W, K)
-    print("Average training accuracy (least square classifier): {}".format(ave_acc_train))
-    print("Average test accuracy (least square classifier): {}".format(ave_acc_test))
+    print("Average training accuracy (least squares classifier): {}".format(ave_acc_train))
+    print("Average test accuracy (least squares classifier): {}".format(ave_acc_test))
 
     # Perform LDA on the training data and use the same projection to compute dimensionality-reduced test data
     lda_train, var_explained, eigVectors = reduceDimensionsUsingLDA(train_x, train_y, K, d)
@@ -157,7 +157,7 @@ def train_and_test_lda(train_set, test_set, K, d):
         lda_train_sub = lda_train[0:i, :].transpose()
         lda_test_sub = lda_test[0:i, :].transpose()
 
-        # Add intercept to the LDA training subset and train the least square classifier
+        # Add intercept to the LDA training subset and train the least squares classifier
         lda_W = performLeastSquareClassifier(lda_train_sub, train_y_binary)
 
         # Test the model weights on the LDA training subset and collect Average training accuracies
@@ -166,15 +166,15 @@ def train_and_test_lda(train_set, test_set, K, d):
         lda_ave_acc_test.append(predictLabels(lda_test_sub, test_y, lda_W, K))
         x_ticks.append("d = {}\nve = {:0.2f}%".format(i, var_explained[i-1]))
 
-    print("Average accuracy (training data on LDA least square classifier): {}".format(lda_ave_acc_train))
-    print("Average accuracy (test data on LDA least square classifier): {}".format(lda_ave_acc_test))
+    print("Average accuracy (training data on LDA least squares classifier): {}".format(lda_ave_acc_train))
+    print("Average accuracy (test data on LDA least squares classifier): {}".format(lda_ave_acc_test))
 
     # Plot model performances and LDA projections
-    plotPerformanceOverDimensions(lda_ave_acc_test, x_ticks, "Least square classifier performance on LDA dimensionality-reduced data\n", D)
+    plotPerformanceOverDimensions(lda_ave_acc_test, x_ticks, "Least squares classifier performance on LDA dimensionality-reduced data\n", D)
     initiateCreationOfLDAPlots(lda_train, lda_test, train_y_binary, train_y, test_y, var_explained, K)
 
 
-# Average training accuracy (least square classifier): 0.95148
-# Average test accuracy (least square classifier): 0.91744
-# Average accuracy (training data on LDA least square classifier): [0.7595200000000001, 0.85112, 0.9028799999999999, 0.9514800000000001, 0.9514800000000001, 0.9514800000000001]
-# Average accuracy (test data on LDA least square classifier): [0.7456, 0.83568, 0.8881599999999998, 0.9174399999999999, 0.9174399999999999, 0.9174399999999999]
+# Average training accuracy (least squares classifier): 0.95148
+# Average test accuracy (least squares classifier): 0.91744
+# Average accuracy (training data on LDA least squares classifier): [0.7595200000000001, 0.85112, 0.9028799999999999, 0.9514800000000001, 0.9514800000000001, 0.9514800000000001]
+# Average accuracy (test data on LDA least squares classifier): [0.7456, 0.83568, 0.8881599999999998, 0.9174399999999999, 0.9174399999999999, 0.9174399999999999]

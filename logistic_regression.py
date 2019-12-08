@@ -43,6 +43,7 @@ def train_and_test_lg(train_x, train_y_binary, K, d, it, ss, test_x, test_y):
 
     # Send training data through the logistic regression model
     weights, cross_entropy, correct_classification = performLogisticRegression(train_x, train_y_binary, K, d, it, ss)
+    print("\n")
 
     # Evaluate the resulting weights on testing data
     predicted_classes = np.argmax(1 / (1 + np.exp(-(weights.dot(test_x.transpose())))), axis=0)
@@ -57,7 +58,7 @@ def train_and_test_lg(train_x, train_y_binary, K, d, it, ss, test_x, test_y):
 # yielding "number_of_param_values" * 2 models, all tested using CV.
 # Evaluate optimal number of training iterations and step size and
 # use them for final testing with input test set
-def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_size_values):
+def log_reg_cross_validation(train_set, test_set, folds, K, d, iteration_values, step_size_values):
 
     # Number of different parameter values to model after
     number_of_param_values = len(iteration_values)
@@ -163,15 +164,15 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
                                                                                       K, d, default_iteration_size,
                                                                                       step_size_values[i], test_x, test_y)
 
-    print("Average testing accuracy:\nModel 1-8 = {}".format(testing_aa_per_model))
+    print("Average testing accuracy: Model 1-8 = {}\n".format(testing_aa_per_model))
 
     print("Mean average validation accuracy for model 1-4: {}".format(mean_ave_acc_i))
     print("Mean average validation accuracy for model 5-8: {}".format(mean_ave_acc_s))
     print("Average validation accuracy variance for model 1-4: {}".format(var_ave_acc_i))
     print("Average validation accuracy variance for model 5-8: {}".format(var_ave_acc_s))
 
-    print("Average testing accuracy (parameters with highest model performance) - final testing: {}".format(final_test_aa_opt_mean))
-    print("Average testing accuracy (parameters with lowest model variance) - final testing: {}".format(final_test_aa_opt_var))
+    print("Average testing accuracy (parameters with highest model performance): {}".format(final_test_aa_opt_mean))
+    print("Average testing accuracy (parameters with lowest model variance): {}".format(final_test_aa_opt_var))
 
 
 # Average testing accuracy:
@@ -181,5 +182,5 @@ def crossValidation(train_set, test_set, folds, K, d, iteration_values, step_siz
 # Mean average validation accuracy for model 5-8: [0.9264  0.93052 0.93436 0.93076]
 # Average validation accuracy variance for model 1-4: [4.0736e-06 2.0576e-06 2.0544e-06 4.7200e-06]
 # Average validation accuracy variance for model 5-8: [2.57120e-05 1.55936e-05 3.99040e-06 3.09440e-06]
-# Average testing accuracy (parameters with highest model performance) - final testing: 0.92432
-# Average testing accuracy (parameters with lowest model variance) - final testing: 0.92112
+# Average testing accuracy (parameters with highest model performance): 0.92432
+# Average testing accuracy (parameters with lowest model variance): 0.92112

@@ -22,7 +22,7 @@ def plot2DwithDecisionsLDA(W, data_x, data_y, K, var_explained, set_type):
         plt.plot(boundary_x, boundary_y, c = 'gray')
 
     # Set plot labels
-    plt.title("LDA 2D {} data projection\nwith least square classifier decision boundaries".format(set_type))
+    plt.title("LDA 2D {} data projection\nwith least squares classifier decision boundaries".format(set_type))
     plt.xlabel('\nve = {:0.2f}%'.format(var_explained[0]))
     plt.ylabel('\nve = {:0.2f}%'.format(var_explained[1]))
     fig.savefig('projectionPlots/2D_{}_plot_LDA_w_boundaries.png'.format(set_type))
@@ -59,9 +59,9 @@ def plot3DwithDecisionsLDA(W, data_x, data_y, K, var_explained, set_type, angle_
 
     # Set plot labels
     if angle_x < 0:
-        plt.title("LDA 3D {} data projection\nwith least square classifier decision boundaries\n\n\n".format(set_type))
+        plt.title("LDA 3D {} data projection\nwith least squares classifier decision boundaries\n\n\n".format(set_type))
     else:
-        plt.title("LDA 3D {} data projection\nwith least square classifier decision boundaries\n".format(set_type))
+        plt.title("LDA 3D {} data projection\nwith least squares classifier decision boundaries\n".format(set_type))
 
     plt.xlabel('\nve = {:0.2f}%'.format(var_explained[0]))
     plt.ylabel('\nve = {:0.2f}%'.format(var_explained[1]))
