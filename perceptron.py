@@ -4,6 +4,8 @@ import math
 import random
 from tqdm import trange
 from IPython.display import clear_output
+import ml_tools as ml
+import os
 
 
 number_of_classes = 5
@@ -80,15 +82,28 @@ def grad_softmax_crossentropy_with_logits(logits, reference_answers):
     return (- ones_for_answers + softmax) / logits.shape[0]
 
 
-def load_dataset(flatten=False):
+def load_dataset(flatten=False, extended_data=False):
+
+    #data_train = ml.extendData(data_train, num_of_dimensions)
+    #data_test = ml.extendData(data_test, num_of_dimensions)
+
     random.shuffle(data_train)
     num_of_dimensions = 28 * 28
-
-    train_x = np.array(data_train[:, 0:num_of_dimensions])
-    train_y = np.array(data_train[:, num_of_dimensions])
     
-    test_x = np.array(data_test[:, 0:num_of_dimensions])
-    test_y = np.array(data_test[:, num_of_dimensions])
+    if extended_data:
+
+        train_x = np.array(ml.extendData(data_train, num_of_dimensions)[:, 0:num_of_dimensions])
+        train_y = np.array(ml.extendData(data_train, num_of_dimensions)[:, num_of_dimensions])
+    
+        test_x = np.array(ml.extendData(data_test, num_of_dimensions)[:, 0:num_of_dimensions])
+        test_y = np.array(ml.extendData(data_test, num_of_dimensions)[:, num_of_dimensions])
+    else:
+
+        train_x = np.array(data_train[:, 0:num_of_dimensions])
+        train_y = np.array(data_train[:, num_of_dimensions])
+    
+        test_x = np.array(data_test[:, 0:num_of_dimensions])
+        test_y = np.array(data_test[:, num_of_dimensions])
 
     #normalize
     test_x = test_x.astype(float) / pixel_range
@@ -105,7 +120,7 @@ def load_dataset(flatten=False):
     return train_x, train_y, validation_x, validation_y, test_x, test_y
 
 
-train_x, train_y, validation_x, validation_y, test_x, test_y = load_dataset(flatten=True)
+train_x, train_y, validation_x, validation_y, test_x, test_y = load_dataset(flatten=True, extended_data=True)
 
 #NETWORK
 
@@ -184,23 +199,56 @@ def iterate_minibatches(inputs, targets, batchsize, shuffle=False):
 train_log = []
 validation_log = []
 
-for epoch in range(25):
+for iteration in range(10):
+    mean_accuracy = []
+    for epoch in range(25):
+        
+        for x_batch, y_batch in iterate_minibatches(train_x, train_y, batchsize=200, shuffle=True):
+            train(network, x_batch, y_batch)
+        
+        train_log.append(np.mean(predict(network, train_x) == train_y)) # 75 %
+        
+        validation_log.append(np.mean(predict(network, validation_x) == validation_y)) # 25 %
 
-    for x_batch, y_batch in iterate_minibatches(train_x, train_y, batchsize=32, shuffle=True):
-        train(network, x_batch, y_batch)
+        clear_output()
+        mean_accuracy.append(validation_log[-1])
+        print("Train accuracy: ", train_log[-1])
+        print("Validation accuracy: ", validation_log[-1])
+
+        """
+        print("Epoch ", epoch)
+        print("Train accuracy: ", train_log[-1])
+        print("Validation accuracy: ", validation_log[-1])
+        
+        if epoch == 1:
+            plt.plot(train_log, label="Training accuracy")
+            plt.plot(validation_log, label="Validation accuracy")
+            plt.legend(loc="best")
+        #plt.grid()
+        #plt.show()
+        
+        if epoch == 24:
+            if not os.path.exists('./perceptron/' + str(iteration)):
+                os.makedirs('./perceptron/' + str(iteration))
+            plt.savefig('./perceptron/' + str(iteration) + '/normal.png')
+        """
+
+    print(mean_accuracy)
+    print("Average Validation Accuracy after 10 iterations: " + str(np.mean(mean_accuracy)))
+
+
     
-    train_log.append(np.mean(predict(network, train_x) == train_y))
-    validation_log.append(np.mean(predict(network, validation_x) == validation_y))
+"""
 
-    clear_output()
-    print("Epoch ", epoch)
-    print("Train accuracy: ", train_log[-1])
-    print("Validation accuracy: ", validation_log[-1])
-    plt.plot(train_log, label="Training accuracy")
-    plt.plot(validation_log, label="Validation accuracy")
-    plt.legend(loc="best")
-    plt.grid()
-    plt.show()
-    
+average_perf = [0.8594720000000001 * 100, 0.905632 * 100]
+labels = ('Normal data', 'Extended data')
+y_pos = np.arange(len(labels))
+plt.bar(y_pos, average_perf, width=0.3)
+plt.xticks([])
+plt.ylabel("Percentage %")
+
+plt.title("Normal & Extended data comparison")
 
 
+plt.show()
+"""
