@@ -23,7 +23,7 @@ def splitIntoFeaturesAndLabels(test_set, train_set, K, d):
 
     # Normalize data
     train_x_std = np.std(train_x, axis=0)
-    train_x_std[train_x_std == 0] = 0.00000001         # kan jeg tillade mig dette?
+    # train_x_std[train_x_std == 0] = 0.00000001         # kan jeg tillade mig dette?
     train_x = (train_x - np.mean(train_x, axis=0)) / train_x_std
     test_x = (test_x - np.mean(train_x, axis=0)) / train_x_std     # SKRIV OM DIFF TRAIN and TEST NORMALIZERING
 

@@ -2,10 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="24904150-042d-49c7-9a28-cc0facaa373d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/tryItOut.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lda.py" beforeDir="false" afterPath="$PROJECT_DIR$/lda.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lda_plots.py" beforeDir="false" afterPath="$PROJECT_DIR$/lda_plots.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logisticRegPlots/2Dlda_with_Hyperplanes.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logisticRegPlots/2Dpca.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logisticRegPlots/3Dlda_with_Hyperplanes.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logisticRegPlots/3Dpca.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/logisticRegPlots/aa_box_plot.png" beforeDir="false" afterPath="$PROJECT_DIR$/logisticRegPlots/aa_box_plot.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logisticRegPlots/cc_training_performance_fold1_it200_ss1.5e-06.png" beforeDir="false" afterPath="$PROJECT_DIR$/logisticRegPlots/cc_training_performance_fold1_it200_ss1.5e-06.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logisticRegPlots/cc_training_performance_fold1_it300_ss1.5e-06.png" beforeDir="false" afterPath="$PROJECT_DIR$/logisticRegPlots/cc_training_performance_fold1_it300_ss1.5e-06.png" afterDir="false" />
@@ -87,8 +90,9 @@
       <change beforePath="$PROJECT_DIR$/logisticRegPlots/testing_performance_it400_ss1e-06.png" beforeDir="false" afterPath="$PROJECT_DIR$/logisticRegPlots/testing_performance_it400_ss1e-06.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logisticRegPlots/testing_performance_it500_ss1.5e-06.png" beforeDir="false" afterPath="$PROJECT_DIR$/logisticRegPlots/testing_performance_it500_ss1.5e-06.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logistic_regression.py" beforeDir="false" afterPath="$PROJECT_DIR$/logistic_regression.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logistic_regression_plots.py" beforeDir="false" afterPath="$PROJECT_DIR$/logistic_regression_plots.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ml_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/ml_tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pca.py" beforeDir="false" afterPath="$PROJECT_DIR$/pca.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -132,29 +136,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.main">
-    <configuration name="expand_data" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="mlearning" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/expand_data.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.main (1)">
     <configuration name="linear_discriminant_analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="mlearning" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -177,6 +159,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="mlearning" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/perform_classifications.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="mlearning" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -190,7 +194,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/logistic_regression_plots.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -243,13 +247,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.linear_discriminant_analysis" />
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.ml_tools" />
+      <item itemvalue="Python.tryItOut" />
+      <item itemvalue="Python.main (1)" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main (1)" />
         <item itemvalue="Python.main" />
         <item itemvalue="Python.tryItOut" />
         <item itemvalue="Python.linear_discriminant_analysis" />
         <item itemvalue="Python.ml_tools" />
-        <item itemvalue="Python.expand_data" />
       </list>
     </recent_temporary>
   </component>
@@ -287,7 +298,11 @@
       <workItem from="1575376769481" duration="17492000" />
       <workItem from="1575559357827" duration="17062000" />
       <workItem from="1575638106424" duration="18334000" />
-      <workItem from="1575752669654" duration="1064000" />
+      <workItem from="1575752669654" duration="1134000" />
+      <workItem from="1575809502549" duration="9286000" />
+      <workItem from="1575897742836" duration="11515000" />
+      <workItem from="1575941712961" duration="32000" />
+      <workItem from="1576086563033" duration="455000" />
     </task>
     <servers />
   </component>
@@ -313,10 +328,11 @@
     <SUITE FILE_PATH="coverage/mlearning$tryItOut.coverage" NAME="tryItOut Coverage Results" MODIFIED="1575750856067" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/mlearning$logistic_regression_plots.coverage" NAME="logistic_regression_plots Coverage Results" MODIFIED="1574434118235" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/mlearning$Chap5.coverage" NAME="Chap5 Coverage Results" MODIFIED="1575124635834" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../MachineLearning" />
+    <SUITE FILE_PATH="coverage/mlearning$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1575933634240" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/mlearning$LDA.coverage" NAME="LDA Coverage Results" MODIFIED="1574425331934" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/mlearning$pca.coverage" NAME="pca Coverage Results" MODIFIED="1574592539594" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/mlearning$linear_discriminant_analysis.coverage" NAME="linear_discriminant_analysis Coverage Results" MODIFIED="1575735476436" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/mlearning$main.coverage" NAME="main Coverage Results" MODIFIED="1575752697805" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/mlearning$main.coverage" NAME="main Coverage Results" MODIFIED="1575904143479" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/mlearning$np_test_operations.coverage" NAME="np_test_operations Coverage Results" MODIFIED="1573835674016" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/mlearning$ml_tools.coverage" NAME="ml_tools Coverage Results" MODIFIED="1575565257877" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>

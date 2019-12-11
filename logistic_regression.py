@@ -1,5 +1,5 @@
 import numpy as np
-import logistic_regression_plots as lgp
+import logistic_regression_plots as lg_p
 import ml_tools as ml
 
 
@@ -18,21 +18,23 @@ def performLogisticRegression(X, r, K, d, iterations, eta):
         grad_w = np.zeros((K, d))
 
         for t in range(train_set_size):
+            # Estimate data label using current weights
             o = (W * X[t]).sum(axis=1)
             y[t] = np.exp(o) / np.sum(np.exp(o))
 
-            if np.argmax(y[t]) == np.argmax(r[t]):
-                acc[it] += 1.0/float(train_set_size)
-
+            # Update the gradient weights
             for i in range(K):
                 grad_w[i] += (r[t][i] - y[t][i]) * X[t]
 
+        # Perform a gradient descent step of size eta
         W += eta * grad_w
 
         # Training accuracy
-        correct_class_indices = np.argmax(r, axis=1)
+        pred_labels = np.argmax(y, axis=1)
+        true_labels = np.argmax(r, axis=1)
+        acc[it] = ml.averageAccuracy(true_labels, pred_labels, K)
         # Cross entropy
-        prob_correct_class = np.choose(correct_class_indices, y.T)
+        prob_correct_class = np.choose(true_labels, y.T)
         cross_e[it] = -sum(np.log(prob_correct_class)/float(train_set_size))
 
     return W, cross_e, acc
@@ -99,18 +101,18 @@ def log_reg_cross_validation(train_set, test_set, folds, K, d, iteration_values,
                                                                                                                      K, d, default_iteration_size,
                                                                                                                      step_size_values[i], k_test_x, k_test_y)
             # Plot training accuracy for the two models defined above
-            lgp.plotCCGraph(correct_classification_i, k, iteration_values[i], default_step_size)
-            lgp.plotCCGraph(correct_classification_s, k, default_iteration_size, step_size_values[i])
+            lg_p.plotCCGraph(correct_classification_i, k, iteration_values[i], default_step_size)
+            lg_p.plotCCGraph(correct_classification_s, k, default_iteration_size, step_size_values[i])
 
             # Plot training cross-entropy for the two models defined above
-            lgp.plotCEGraph(cross_entropy_i, k, iteration_values[i], default_step_size)
-            lgp.plotCEGraph(cross_entropy_s, k, default_iteration_size, step_size_values[i])
+            lg_p.plotCEGraph(cross_entropy_i, k, iteration_values[i], default_step_size)
+            lg_p.plotCEGraph(cross_entropy_s, k, default_iteration_size, step_size_values[i])
 
     # Create bar plot for every model showing validation accuracy for each CV-fold
     for i in range(number_of_param_values):
 
-        lgp.plotAABarPlot(aa_per_fold_per_it_value[:, i], "\nModel {}\nTraining iterations = {}, step size = {}\n".format(i + 1, iteration_values[i], default_step_size), iteration_values[i], default_step_size)
-        lgp.plotAABarPlot(aa_per_fold_per_ss_value[:, i], "\nModel {}\nTraining iterations = {}, step size = {}\n".format(number_of_param_values + i + 1, default_iteration_size, step_size_values[i]), default_iteration_size, step_size_values[i])
+        lg_p.plotAABarPlot(aa_per_fold_per_it_value[:, i], "\nModel {}\nTraining iterations = {}, step size = {}\n".format(i + 1, iteration_values[i], default_step_size), iteration_values[i], default_step_size)
+        lg_p.plotAABarPlot(aa_per_fold_per_ss_value[:, i], "\nModel {}\nTraining iterations = {}, step size = {}\n".format(number_of_param_values + i + 1, default_iteration_size, step_size_values[i]), default_iteration_size, step_size_values[i])
 
     # Compute for every model the average validation accuracy mean
     mean_ave_acc_i = np.mean(aa_per_fold_per_it_value, axis = 0)
@@ -131,11 +133,11 @@ def log_reg_cross_validation(train_set, test_set, folds, K, d, iteration_values,
     optimal_step_size_var = step_size_values[np.argmin(var_ave_acc_s)]
 
     # Create box plot comparing model performances
-    lgp.plotAABoxPlot(aa_per_fold_per_it_value, aa_per_fold_per_ss_value, number_of_param_values)
+    lg_p.plotAABoxPlot(aa_per_fold_per_it_value, aa_per_fold_per_ss_value, number_of_param_values)
 
     # Create bar plot comparing model performances
-    lgp.plotCollectedModelsAABarPlot(mean_ave_acc_i, mean_ave_acc_s, iteration_values, step_size_values, "Mean average validation accuracy over CV-folds", 1, "it")
-    lgp.plotCollectedModelsAABarPlot(var_ave_acc_i, var_ave_acc_s, iteration_values, step_size_values, "Average validation accuracy variance over CV-folds", 3, "ss")
+    lg_p.plotCollectedModelsAABarPlot(mean_ave_acc_i, mean_ave_acc_s, iteration_values, step_size_values, "Mean average validation accuracy over CV-folds", 1, "it")
+    lg_p.plotCollectedModelsAABarPlot(var_ave_acc_i, var_ave_acc_s, iteration_values, step_size_values, "Average validation accuracy variance over CV-folds", 3, "ss")
 
     # Final testing:
     # Separate full training and test data into attributes and class labels
@@ -156,9 +158,11 @@ def log_reg_cross_validation(train_set, test_set, folds, K, d, iteration_values,
 
     testing_aa_per_model = np.zeros(number_of_param_values * 2)
     for i in range(number_of_param_values):
-        _, _, _, testing_aa_per_model[i] = train_and_test_lg(train_x, train_y_binary,
+        _, training_aa, _, testing_aa_per_model[i] = train_and_test_lg(train_x, train_y_binary,
                                                              K, d, iteration_values[i],
                                                              default_step_size, test_x, test_y)
+        if i == 3:
+            print("Training accuracy (Model 4): {}".format(training_aa))
 
         _, _, _, testing_aa_per_model[number_of_param_values + i] = train_and_test_lg(train_x, train_y_binary,
                                                                                       K, d, default_iteration_size,
@@ -173,14 +177,3 @@ def log_reg_cross_validation(train_set, test_set, folds, K, d, iteration_values,
 
     print("Average testing accuracy (parameters with highest model performance): {}".format(final_test_aa_opt_mean))
     print("Average testing accuracy (parameters with lowest model variance): {}".format(final_test_aa_opt_var))
-
-
-# Average testing accuracy:
-# Model 1-8 = [0.9184  0.92216 0.92288 0.92456 0.9136  0.91552 0.92368 0.92104]
-
-# Mean average validation accuracy for model 1-4: [0.92888 0.93152 0.93396 0.9356 ]
-# Mean average validation accuracy for model 5-8: [0.9264  0.93052 0.93436 0.93076]
-# Average validation accuracy variance for model 1-4: [4.0736e-06 2.0576e-06 2.0544e-06 4.7200e-06]
-# Average validation accuracy variance for model 5-8: [2.57120e-05 1.55936e-05 3.99040e-06 3.09440e-06]
-# Average testing accuracy (parameters with highest model performance): 0.92432
-# Average testing accuracy (parameters with lowest model variance): 0.92112

@@ -2,21 +2,21 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import ml_tools as ml
-import lda_plots as lplots
+import lda_plots as lda_p
 
 
 # Reduce dimensionality of input data using Linear Discriminant Analysis
-def reduceDimensionsUsingLDA(X, y, K, d):
+def reduceDimensionsUsingLDA(train_x, train_y, test_x, K, d):
 
     # Overall data mean by dimension
-    data_dim_mean = np.mean(X, axis=0).reshape((d, 1))
+    data_dim_mean = np.mean(train_x, axis=0).reshape((d, 1))
 
     # Compute class mean by dimension m_i
     class_size = np.zeros(K).astype(int)
     class_dim_mean = []
     S_W = np.zeros((d, d))
     for i in range(K):
-        class_i = X[y == i]
+        class_i = train_x[train_y == i]
         class_size[i] = class_i.shape[0]
         class_dim_mean.append(np.mean(class_i, axis=0))
         m_i = class_dim_mean[i].reshape(d, 1)
@@ -50,9 +50,10 @@ def reduceDimensionsUsingLDA(X, y, K, d):
     var_explained = (eigValues_sorted / np.sum(eigValues_sorted)) * 100
 
     # Project data onto the eigenvectors of J and extract the K-1 relevant dimensions
-    Z = eigVectors_sorted.dot(X.transpose())
+    Z_train = eigVectors_sorted.dot(train_x.transpose())
+    Z_test = eigVectors_sorted.dot(test_x.transpose())
 
-    return Z, var_explained, eigVectors_sorted
+    return Z_train, Z_test, var_explained, eigVectors_sorted
 
 
 # Compute decision boundary weights of input data using Least Square Classifier
@@ -118,14 +119,14 @@ def initiateCreationOfLDAPlots(lda_train, lda_test, train_y_binary, train_y, tes
     ml.plotDataIn2D(lda_train_2D, train_y, K, x_label, y_label, 'LDA', 'training')
     ml.plotDataIn3D(lda_train_3D, train_y, K, x_label, y_label, z_label, 'LDA', 'training', 30, 45)
 
-    lplots.plot2DwithDecisionsLDA(W_2D, lda_train_2D, train_y, K, var_explained, 'training')
-    lplots.plot3DwithDecisionsLDA(W_3D, lda_train_3D, train_y, K, var_explained, 'training', 30, 45)
+    lda_p.plot2DwithDecisionsLDA(W_2D, lda_train_2D, train_y, K, var_explained, 'training')
+    lda_p.plot3DwithDecisionsLDA(W_3D, lda_train_3D, train_y, K, var_explained, 'training', 30, 45)
 
     ml.plotDataIn2D(lda_test_2D, test_y, K, x_label, y_label, 'LDA', 'test')
     ml.plotDataIn3D(lda_test_3D, test_y, K, x_label, y_label, z_label, 'LDA', 'test', 20, 15)
 
-    lplots.plot2DwithDecisionsLDA(W_2D, lda_test_2D, test_y, K, var_explained, 'test')
-    lplots.plot3DwithDecisionsLDA(W_3D, lda_test_3D, test_y, K, var_explained, 'test', 20, 15)
+    lda_p.plot2DwithDecisionsLDA(W_2D, lda_test_2D, test_y, K, var_explained, 'test')
+    lda_p.plot3DwithDecisionsLDA(W_3D, lda_test_3D, test_y, K, var_explained, 'test', 20, 15)
 
 
 # Call for least squares classifier training on LDA data
@@ -145,8 +146,8 @@ def train_and_test_lda(train_set, test_set, K, d):
     print("Average test accuracy (least squares classifier): {}".format(ave_acc_test))
 
     # Perform LDA on the training data and use the same projection to compute dimensionality-reduced test data
-    lda_train, var_explained, eigVectors = reduceDimensionsUsingLDA(train_x, train_y, K, d)
-    lda_test = eigVectors.dot(test_x.transpose())
+    lda_train, lda_test, var_explained, eigVectors = reduceDimensionsUsingLDA(train_x, train_y, test_x, K, d)
+    # lda_test = eigVectors.dot(test_x.transpose())
 
     lda_ave_acc_train = []
     lda_ave_acc_test = []
@@ -170,11 +171,5 @@ def train_and_test_lda(train_set, test_set, K, d):
     print("Average accuracy (test data on LDA least squares classifier): {}".format(lda_ave_acc_test))
 
     # Plot model performances and LDA projections
-    plotPerformanceOverDimensions(lda_ave_acc_test, x_ticks, "Least squares classifier performance on LDA dimensionality-reduced data\n", D)
+    plotPerformanceOverDimensions(lda_ave_acc_test, x_ticks, "Least Squares classifier testing accuracy on LDA dimensionality-reduced data\n", D)
     initiateCreationOfLDAPlots(lda_train, lda_test, train_y_binary, train_y, test_y, var_explained, K)
-
-
-# Average training accuracy (least squares classifier): 0.95148
-# Average test accuracy (least squares classifier): 0.91744
-# Average accuracy (training data on LDA least squares classifier): [0.7595200000000001, 0.85112, 0.9028799999999999, 0.9514800000000001, 0.9514800000000001, 0.9514800000000001]
-# Average accuracy (test data on LDA least squares classifier): [0.7456, 0.83568, 0.8881599999999998, 0.9174399999999999, 0.9174399999999999, 0.9174399999999999]

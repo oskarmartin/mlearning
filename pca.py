@@ -23,7 +23,7 @@ def reduceDimensionsUsingPCA(data_x, d):
 
 
 # Call for PCA dimensionality reduction and plotting
-def computePCAPlots(data, K, d, angle):
+def computePCAPlots(data, K, d):
 
     data_x = np.array(data[:, 0:d])
     data_y = np.array(data[:, d])
@@ -33,5 +33,5 @@ def computePCAPlots(data, K, d, angle):
     y_label = 'PC 2: ve = {:0.2f}%'.format(variance_explained[1])
     z_label = 'PC 3: ve = {:0.2f}%'.format(variance_explained[2])
 
-    ml.plotDataIn2D(projection_2D, data_y, K, x_label, y_label, "PCA", "training")
-    ml.plotDataIn3D(projection_3D, data_y, K, x_label, y_label, z_label, "PCA", "training", 30, 45)
+    ml.plotDataIn2D(projection_2D, data_y, K, x_label, y_label, "PCA", "")
+    ml.plotDataIn3D(projection_3D, data_y, K, x_label, y_label, z_label, "PCA", "", 30, 125)

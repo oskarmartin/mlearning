@@ -59,9 +59,9 @@ def plot3DwithDecisionsLDA(W, data_x, data_y, K, var_explained, set_type, angle_
 
     # Set plot labels
     if angle_x < 0:
-        plt.title("LDA 3D {} data projection\nwith least squares classifier decision boundaries\n\n\n".format(set_type))
+        plt.title("LDA 3D {} data projection\nwith Least Squares classifier decision boundaries\n\n\n".format(set_type))
     else:
-        plt.title("LDA 3D {} data projection\nwith least squares classifier decision boundaries\n".format(set_type))
+        plt.title("LDA 3D {} data projection\nwith Least Squares classifier decision boundaries\n".format(set_type))
 
     plt.xlabel('\nve = {:0.2f}%'.format(var_explained[0]))
     plt.ylabel('\nve = {:0.2f}%'.format(var_explained[1]))
