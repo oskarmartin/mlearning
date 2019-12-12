@@ -5,6 +5,7 @@ import random
 from tqdm import trange
 from IPython.display import clear_output
 import ml_tools as ml
+import lda as lda
 import os
 
 
@@ -18,12 +19,10 @@ data_test = np.load("data/fashion_test.npy")
 
 class Layer:
     """
-        Building block. Each layer is performing 2 things:
+        Building block.
+        Layer performing:
             - Process input to get output
             - Propagate gradients through itself
-        
-        Some layers have learnable parameters (if any present) which
-        they update during layer.backward
     """
     def __init__(self):
         pass
@@ -52,6 +51,7 @@ class Dense(Layer):
         self.learning_rate = learning_rate
         self.weights = np.random.normal(loc=0.0, scale=np.sqrt(2/(input_units+output_units)), size = (input_units, output_units))
         self.biases = np.zeros(output_units)
+    
 
     def forward(self, input):
         return np.dot(input, self.weights) + self.biases
@@ -83,9 +83,6 @@ def grad_softmax_crossentropy_with_logits(logits, reference_answers):
 
 
 def load_dataset(flatten=False, extended_data=False):
-
-    #data_train = ml.extendData(data_train, num_of_dimensions)
-    #data_test = ml.extendData(data_test, num_of_dimensions)
 
     random.shuffle(data_train)
     num_of_dimensions = 28 * 28
@@ -120,16 +117,7 @@ def load_dataset(flatten=False, extended_data=False):
     return train_x, train_y, validation_x, validation_y, test_x, test_y
 
 
-train_x, train_y, validation_x, validation_y, test_x, test_y = load_dataset(flatten=True, extended_data=True)
 
-#NETWORK
-
-network = []
-network.append(Dense(train_x.shape[1], 100))
-network.append(ReLu())
-network.append(Dense(100, 200))
-network.append(ReLu())
-network.append(Dense(200, 10))
 
 
 def forward(network, X):
@@ -167,6 +155,7 @@ def train(network, X, y):
 
     #Compute the loss and initial gradient
     loss = softmax_crossentropy_with_logits(logits, y)
+    #print("loss: " + str(loss))
     loss_grad = grad_softmax_crossentropy_with_logits(logits, y)
 
 
@@ -195,60 +184,70 @@ def iterate_minibatches(inputs, targets, batchsize, shuffle=False):
             excerpt = slice(start_idx, start_idx + batchsize)
         yield inputs[excerpt], targets[excerpt]
     
+def plotFinalResult(validation_log, test_log):
+    plt.plot(validation_log, label="Training accuracy")
+    plt.plot(test_log, label="Test accuracy")
+    plt.legend(loc="best")
+    plt.xlabel("Epoch")
+    plt.ylabel("Accuracy percentage")
+    plt.title("MLP average accuracy")
 
-train_log = []
-validation_log = []
+    if not os.path.exists('./final'):
+        os.makedirs('./final')
+    plt.savefig('./final/final.png')
 
-for iteration in range(10):
-    mean_accuracy = []
-    for epoch in range(25):
-        
-        for x_batch, y_batch in iterate_minibatches(train_x, train_y, batchsize=200, shuffle=True):
-            train(network, x_batch, y_batch)
-        
-        train_log.append(np.mean(predict(network, train_x) == train_y)) # 75 %
-        
-        validation_log.append(np.mean(predict(network, validation_x) == validation_y)) # 25 %
-
-        clear_output()
-        mean_accuracy.append(validation_log[-1])
-        print("Train accuracy: ", train_log[-1])
-        print("Validation accuracy: ", validation_log[-1])
-
-        """
-        print("Epoch ", epoch)
-        print("Train accuracy: ", train_log[-1])
-        print("Validation accuracy: ", validation_log[-1])
-        
-        if epoch == 1:
-            plt.plot(train_log, label="Training accuracy")
-            plt.plot(validation_log, label="Validation accuracy")
-            plt.legend(loc="best")
-        #plt.grid()
-        #plt.show()
-        
-        if epoch == 24:
-            if not os.path.exists('./perceptron/' + str(iteration)):
-                os.makedirs('./perceptron/' + str(iteration))
-            plt.savefig('./perceptron/' + str(iteration) + '/normal.png')
-        """
-
-    print(mean_accuracy)
-    print("Average Validation Accuracy after 10 iterations: " + str(np.mean(mean_accuracy)))
-
+def performMLP():
 
     
-"""
 
-average_perf = [0.8594720000000001 * 100, 0.905632 * 100]
-labels = ('Normal data', 'Extended data')
-y_pos = np.arange(len(labels))
-plt.bar(y_pos, average_perf, width=0.3)
-plt.xticks([])
-plt.ylabel("Percentage %")
+    train_x, train_y, validation_x, validation_y, test_x, test_y = load_dataset(flatten=True, extended_data=True)
 
-plt.title("Normal & Extended data comparison")
+    network = []
+    network.append(Dense(train_x.shape[1], 100))
+    network.append(ReLu())
+    network.append(Dense(100, 200))
+    network.append(ReLu())
+    network.append(Dense(200, 5))
 
+    train_log = []
+    validation_log = []
+    test_log = []
 
-plt.show()
-"""
+    # NETWORK
+    
+
+    # Do 10 iterations
+    for iteration in range(10):
+        mean_accuracy = []
+
+        for epoch in range(25):
+            
+            # Training of the model
+            for x_batch, y_batch in iterate_minibatches(train_x, train_y, batchsize=32, shuffle=True):
+                train(network, x_batch, y_batch)
+            
+            # Gather data of the accuracy
+            train_log.append(ml.averageAccuracy(predict(network, train_x), train_y, 5)) # 75 %
+            
+            validation_log.append(ml.averageAccuracy(predict(network, validation_x), validation_y, 5)) # 25 %
+
+            test_log.append(ml.averageAccuracy(predict(network, test_x), test_y, 5))
+
+            #ml.printConfusionMatrix(predict(network, test_x), test_y, 5)
+            ml.printConfusionMatrix(predict(network, validation_x), validation_y, 5)
+            
+
+            
+            clear_output()
+            mean_accuracy.append(validation_log[-1])
+            print("Epoch: ", epoch)
+            print("Train accuracy: ", train_log[-1])
+            print("Validation accuracy: ", validation_log[-1])
+
+    print(mean_accuracy)
+    print("Average accuracy after 10 iterations: " + str(np.mean(mean_accuracy)))
+    print("Test accuracy: ", test_log[-1])
+
+    plotFinalResult(validation_log, test_log)
+
+performMLP()

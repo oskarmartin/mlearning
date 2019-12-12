@@ -4,6 +4,7 @@ import random
 import numpy as np
 import ml_tools as ml
 import lda
+import perceptron as mlp
 
 # Known data information
 number_of_classes = 5
@@ -32,4 +33,4 @@ lg.log_reg_cross_validation(data_train, data_test, number_of_CV_folds, number_of
 # Perform linear discriminant analysis classification
 # lda.train_and_test_lda(data_train_extend, data_test, number_of_classes, number_of_dimensions)
 # Perform multilayer perceptron classification
-# OSKAR: put code her
+mlp.performMLP()
