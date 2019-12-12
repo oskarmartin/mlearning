@@ -83,6 +83,9 @@ def predictLabels(test_data_x, true_labels, trained_weights, K):
     y = np.argmax(probability_y, axis=1)
     ave_acc = ml.averageAccuracy(true_labels, y, K)
 
+    # Print confusion matrix
+    ml.printConfusionMatrix(true_labels, y, K)
+
     return ave_acc
 
 
@@ -173,3 +176,4 @@ def train_and_test_lda(train_set, test_set, K, d):
     # Plot model performances and LDA projections
     plotPerformanceOverDimensions(lda_ave_acc_test, x_ticks, "Least Squares classifier testing accuracy on LDA dimensionality-reduced data\n", D)
     initiateCreationOfLDAPlots(lda_train, lda_test, train_y_binary, train_y, test_y, var_explained, K)
+

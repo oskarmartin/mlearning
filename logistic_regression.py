@@ -51,6 +51,9 @@ def train_and_test_lg(train_x, train_y_binary, K, d, it, ss, test_x, test_y):
     predicted_classes = np.argmax(1 / (1 + np.exp(-(weights.dot(test_x.transpose())))), axis=0)
     aa_per_fold_per_ss_value = ml.averageAccuracy(test_y, predicted_classes, K)
 
+    # Print confusion matrix
+    ml.printConfusionMatrix(test_y, predicted_classes, K)
+
     return weights, correct_classification, cross_entropy, aa_per_fold_per_ss_value
 
 

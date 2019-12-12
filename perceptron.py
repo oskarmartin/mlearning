@@ -133,7 +133,7 @@ network.append(Dense(200, 10))
 
 
 def forward(network, X):
-    #Compute acivations of all network layers by applying them sequentially
+    #Compute activations of all network layers by applying them sequentially
     #Return a list of activations for each layer
     activations = []
     input = X
